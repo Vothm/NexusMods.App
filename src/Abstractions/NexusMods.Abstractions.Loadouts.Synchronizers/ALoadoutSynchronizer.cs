@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -126,7 +127,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     #region ILoadoutSynchronizer Implementation
     
-    protected ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
+    public ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx)
     {
         if (loadout.Mods.TryGetFirst(m => m.Category == ModCategory.Overrides, out var overridesMod))
             return overridesMod.ModId;
@@ -148,9 +149,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var tree = new Dictionary<GamePath, SyncTreeNode>();
 
+        var st = Stopwatch.StartNew();
+        
         var grouped = loadoutTree.Mods.Where(m => m.Enabled)
             .SelectMany(m => m.Files)
-            .GroupBy(f => f.To);
+            .GroupBy(f => f.To)
+            .ToList();
+        
+        Console.WriteLine($"Grouped files in {st.Elapsed}");
+        st.Restart();
+
         
         foreach (var group in grouped)
         {
@@ -177,6 +185,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 LoadoutFile = stored,
             });
         }
+        
+        Console.WriteLine($"Added Loadout files in {st.Elapsed}");
+        st.Restart();
 
         foreach (var node in previousTree.GetAllDescendentFiles())
         {
@@ -194,6 +205,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
         
+        Console.WriteLine($"Added previous files in {st.Elapsed}");
+        st.Restart();
+        
         foreach (var node in currentState.GetAllDescendentFiles())
         {
             if (tree.TryGetValue(node.GamePath(), out var found))
@@ -210,7 +224,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
         
-        return new SyncTree(tree);
+        Console.WriteLine($"Added current files in {st.Elapsed}");
+        st.Restart();
+        var newTree =  new SyncTree(tree);
+        Console.WriteLine($"Built tree in {st.Elapsed}");
+
+        return newTree;
     }
 
     /// <inheritdoc />

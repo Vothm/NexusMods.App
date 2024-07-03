@@ -55,17 +55,21 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     private readonly IHost _host;
     protected readonly ILogger<T> Logger;
 
-    protected ADataModelTest(IServiceProvider _)
+    protected ADataModelTest(IServiceProvider? upstreamProvider)
     {
         var host = new HostBuilder();
         host.ConfigureServices(services =>
-        {
-            services.AddSingleton<ITestOutputHelperAccessor>
-                (s => _.GetRequiredService<ITestOutputHelperAccessor>());
-            Startup.AddServices(services);
-            
-        });
-        
+            {
+                if (upstreamProvider != null)
+                {
+                    services.AddSingleton<ITestOutputHelperAccessor>
+                        (s => upstreamProvider.GetRequiredService<ITestOutputHelperAccessor>());
+                }
+                Startup.AddServices(services, false);
+
+            }
+        );
+
         _host = host.Build();
         var provider = _host.Services;
         FileStore = provider.GetRequiredService<IFileStore>();

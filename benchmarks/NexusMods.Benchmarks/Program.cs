@@ -7,7 +7,26 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using NexusMods.Benchmarks;
+using NexusMods.Benchmarks.Benchmarks.Loadouts;
 using NexusMods.Benchmarks.Interfaces;
+
+
+// REMOVE THIS
+
+//BenchmarkRunner.Run<SynchronizerBenchmarks>();
+
+var benchmark = new SynchronizerBenchmarks();
+await benchmark.Setup();
+for (int i = 0; i < 10; i++)
+{
+    var st = Stopwatch.StartNew();
+    benchmark.TestBuildSyncTree();
+    Console.WriteLine(st.Elapsed);
+}
+
+return;
+
+// ENDREMOVE
 
 var benchmarks = Assembly.GetExecutingAssembly()
     .GetTypes()

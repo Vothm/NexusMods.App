@@ -14,7 +14,7 @@ namespace NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
 /// <summary>
 ///     Provides a datamodel library setup.
 /// </summary>
-public class ABenchmarkDatamodel(IServiceProvider provider) : ADataModelTest<ABenchmarkDatamodel>(provider)
+public class ABenchmarkDatamodel() : ADataModelTest<ABenchmarkDatamodel>(null!)
 {
     public new TemporaryFileManager TemporaryFileManager => base.TemporaryFileManager;
     public new IFileStore FileStore => base.FileStore;
@@ -28,17 +28,4 @@ public class ABenchmarkDatamodel(IServiceProvider provider) : ADataModelTest<ABe
     public new IGame Game => base.Game;
     public new GameInstallation Install => base.Install;
     public new Loadout.ReadOnly BaseLoadout => base.BaseLoadout;
-    
-    public static ABenchmarkDatamodel WithMod(IServiceProvider provider, string modName, IEnumerable<string> files)
-    {
-        var setup = new ABenchmarkDatamodel(provider);
-        var modFiles = files.Select(x => (x, x)).ToArray();
-        Task.Run(async () =>
-            {
-                await setup.InitializeAsync();
-                return await setup.AddMod(modName, modFiles);
-            }
-        ).Wait();
-        return setup;
-    }
 }

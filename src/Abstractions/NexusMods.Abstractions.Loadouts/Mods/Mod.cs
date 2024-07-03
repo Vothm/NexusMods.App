@@ -108,6 +108,5 @@ public partial class Mod : IModelDefinition
                 return tx.Timestamp;
             }
         }
-
     }
 }

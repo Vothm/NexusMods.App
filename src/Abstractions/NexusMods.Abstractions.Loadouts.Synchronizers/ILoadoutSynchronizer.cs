@@ -1,6 +1,8 @@
 ﻿using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Mods;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -98,5 +100,11 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="installation">Game installation which should be unmanaged.</param>
     Task UnManage(GameInstallation installation);
-    #endregion
+
+    /// <summary>
+    /// Gets the modId for the overrides mod for the given loadout, creating it if it does not exist.
+    /// </summary>
+    public ModId GetOrCreateOverridesMod(Loadout.ReadOnly loadout, ITransaction tx);
+
+#endregion
 }

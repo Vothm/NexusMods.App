@@ -33,7 +33,7 @@ public static class Startup
         AddServices(container);
     }
     
-    public static IServiceCollection AddServices(IServiceCollection container)
+    public static IServiceCollection AddServices(IServiceCollection container, bool addTestLogging = true)
     {
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.DataModel.Tests-{Guid.NewGuid()}";
@@ -44,7 +44,14 @@ public static class Startup
 
         return container
             .AddSingleton<IGuidedInstaller, NullGuidedInstaller>()
-            .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))
+            .AddLogging(builder =>
+                {
+                    if (addTestLogging)
+                        builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace);
+                    else
+                        builder.AddConsole().SetMinimumLevel(LogLevel.Warning);
+                }
+            )
             .AddFileSystem()
             .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSettingsManager()
