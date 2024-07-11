@@ -4,6 +4,7 @@ $ProgressPreference = 'SilentlyContinue' #'Continue
 
 $rootDir = Resolve-Path "."
 
+# Make sure to updated the version in sign.ps1 as well
 # https://github.com/SSLcom/CodeSignTool/releases
 $downloadUrl = "https://github.com/SSLcom/CodeSignTool/releases/download/v1.3.0/CodeSignTool-v1.3.0-windows.zip"
 $downloadedFile = Join-Path $rootDir "CodeSignTool.zip"
