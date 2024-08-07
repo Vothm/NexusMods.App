@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.FileStore.Nx.Models;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
@@ -47,15 +48,25 @@ public class NxFileStoreUpdater
         
         // Now retract all removed files
         archiveDoesNotExist:
+        var archivedFileIds = new HashSet<EntityId>();
         foreach (var retractedHash in toRetract)
         {
             foreach (var archivedFile in ArchivedFile.FindByHash(db, retractedHash))
             {
-                if (archivedFile.IsValid())
-                    archivedFile.Retract(tx);
+                if (!archivedFile.IsValid())
+                    continue;
+
+                archivedFile.Retract(tx);
+                archivedFileIds.Add(archivedFile.Id);
             }
         }
 
+        foreach (var linkedLoadoutItem in LibraryLinkedLoadoutItem.All(db))
+        {
+            if (archivedFileIds.Contains(linkedLoadoutItem.LibraryItemId))
+                linkedLoadoutItem.Retract(tx);
+        }
+        
         tx.Commit().ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }
