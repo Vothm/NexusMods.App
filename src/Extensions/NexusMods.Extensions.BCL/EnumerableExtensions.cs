@@ -33,7 +33,8 @@ public static class EnumerableExtensions
     /// in a try-get style. This is helpful for value types like structs that have a non-null default value.
     /// </summary>
     /// <returns></returns>
-    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, out T? value)
+    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, out T value)
+    where T : notnull
     {
         foreach (var item in enumerable)
         {
@@ -41,7 +42,7 @@ public static class EnumerableExtensions
             return true;
         }
 
-        value = default;
+        value = default(T)!;
         return false;
     }
 

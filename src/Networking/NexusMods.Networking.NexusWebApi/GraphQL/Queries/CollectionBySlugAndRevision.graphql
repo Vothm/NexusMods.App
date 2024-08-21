@@ -1,0 +1,20 @@
+
+query CollectionBySlugAndRevision($slug: String!, $revision: Int!) {
+    collectionRevision(slug: $slug, revision: $revision, viewAdultContent: true)
+    {
+        downloadLink
+        modCount
+        modFiles {
+            fileId
+            file {
+                name
+                version
+                description
+                mod {
+                    modId
+                    name
+                }
+            }
+        }
+    }
+}

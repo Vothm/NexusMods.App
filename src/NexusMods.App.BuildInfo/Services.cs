@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace NexusMods.App.BuildInfo;
 
@@ -23,7 +24,8 @@ public static class Services
             .Where(sd => sd.ImplementationType != null)
             .GroupBy(sd => (sd.ServiceType, sd.ImplementationType))
             .Where(g => g.Count() > 1)
-            .Select(g => (g.Key.ServiceType, g.Key.ImplementationType, g.Count()))
+            .Select(g => (g.Key.ServiceType, g.Key.ImplementationType, g.Count(), g))
+            .Where(g => g.ServiceType != typeof(IStartupValidator))
             .ToList();
 
         if (serviceDescriptors.Any())

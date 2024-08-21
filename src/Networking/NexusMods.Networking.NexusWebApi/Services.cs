@@ -44,8 +44,12 @@ public static class Services
         
         // Nexus API Key
         collection.AddAttributeCollection(typeof(ApiKey));
+
+        collection.AddClient()
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql"));
         
         return collection
+
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()
             .AddWorker<NexusModsDownloadJobWorker>()

@@ -52,6 +52,9 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     {
         var parsed = NXMUrl.Parse(url);
         _logger.LogDebug("Received NXM URL: {Url}", parsed);
+        UserInfo? userInfo = null;
+        
+        
         switch (parsed)
         {
             case NXMOAuthUrl oauthUrl:
@@ -59,7 +62,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in
-                var userInfo = await _loginManager.GetUserInfoAsync(cancel);
+                userInfo = await _loginManager.GetUserInfoAsync(cancel);
                 if (userInfo is not null)
                 {
                     var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
@@ -76,6 +79,18 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
                     // var task = await _downloadService.AddTask(modUrl);
                     // _ = task.StartAsync();
+                }
+                else
+                {
+                    _logger.LogWarning("Download failed: User is not logged in");
+                }
+                break;
+            case NXMCollectionUrl collectionUrl:
+                userInfo = await _loginManager.GetUserInfoAsync(cancel);
+                if (userInfo is not null)
+                {
+                    var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
+                    await nexusModsLibrary.AddCollection(collectionUrl, cancel);
                 }
                 else
                 {

@@ -1,3 +1,4 @@
+
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,12 +6,15 @@ using NexusMods.Abstractions.Games.DTO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
+using StrawberryShake;
+using DownloadLink = NexusMods.Abstractions.NexusWebApi.DTOs.DownloadLink;
+using DTOs = NexusMods.Abstractions.NexusWebApi.DTOs;
+using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -20,15 +24,17 @@ public class NexusModsLibrary
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
+    private readonly IClient _gqlClient;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public NexusModsLibrary(IServiceProvider serviceProvider)
+    public NexusModsLibrary(IServiceProvider serviceProvider, IClient gqlClient)
     {
         _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
+        _gqlClient = gqlClient;
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -52,6 +58,54 @@ public class NexusModsLibrary
 
         var txResults = await tx.Commit();
         return txResults.Remap(newModPage);
+    }
+
+    public async Task AddCollection(NXMCollectionUrl collectionUrl, CancellationToken token)
+    {
+        var results = await _gqlClient.CollectionBySlugAndRevision
+            .ExecuteAsync(collectionUrl.Slug.ToString(), (int)collectionUrl.Revision.Value, token);
+        
+        results.EnsureNoErrors();
+
+        using var tx = _connection.BeginTransaction();
+        var basisDb = _connection.Db;
+        
+        var gameDomain = GameDomain.From(collectionUrl.Game);
+        
+        foreach (var modFile in results.Data!.CollectionRevision.ModFiles)
+        {
+            var modFileId = FileId.From((ulong)modFile.FileId);
+            var modId = ModId.From((ulong)modFile.File!.Mod.ModId);
+
+            EntityId modMetadataId;
+            EntityId fileMetadataId;
+
+            if (!basisDb.Datoms(NexusModsModPageMetadata.ModId, modId).Select(d => d.E).TryGetFirst(out modMetadataId))
+            {
+                modMetadataId = tx.TempId();
+                _ = new NexusModsModPageMetadata.New(tx, modMetadataId)
+                {
+                    Name = modFile.File.Mod.Name,
+                    ModId = modId,
+                    GameDomain = gameDomain,
+                };
+            }
+            
+            if (modMetadataId.InPartition(PartitionId.Temp) || !basisDb.Datoms(NexusModsFileMetadata.FileId, modFileId).Select(d => d.E).TryGetFirst(out fileMetadataId))
+            {
+                fileMetadataId = tx.TempId();
+                _ = new NexusModsFileMetadata.New(tx, fileMetadataId)
+                {
+                    Name = modFile.File.Name,
+                    Version = modFile.File.Version,
+                    FileId = modFileId,
+                    ModPageId = modMetadataId,
+                };
+            }
+        }
+        
+        await tx.Commit();
+        
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
@@ -88,7 +142,7 @@ public class NexusModsLibrary
         Optional<(NXMKey, DateTime)> nxmData,
         CancellationToken cancellationToken = default)
     {
-        Response<DownloadLink[]> links;
+        DTOs.Response<DownloadLink[]> links;
 
         if (nxmData.HasValue)
         {
