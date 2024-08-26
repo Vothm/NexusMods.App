@@ -1,39 +1,29 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
-using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.LoadoutGrid;
 
-[JsonName("NexusMods.App.UI.Page.LoadoutGridContext")]
-public record LoadoutGridContext : IPageFactoryContext
-{
-    public required LoadoutId LoadoutId { get; init; }
-}
-
 [UsedImplicitly]
-public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, LoadoutGridContext>
+public class LoadoutGridPageFactory(IServiceProvider serviceProvider) : APageFactory<ILoadoutGridViewModel, LoadoutId>(serviceProvider)
 {
-    private readonly IConnection _conn;
-    public LoadoutGridPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        _conn = serviceProvider.GetRequiredService<IConnection>();
-    }
-
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("c6221ce6-cf12-49bf-b32c-8138ef701cc5"));
     public override PageFactoryId Id => StaticId;
 
-    public override ILoadoutGridViewModel CreateViewModel(LoadoutGridContext context)
+    public override ILoadoutGridViewModel CreateViewModel(LoadoutId loadoutId)
     {
         var vm = ServiceProvider.GetRequiredService<ILoadoutGridViewModel>();
-        vm.LoadoutId = context.LoadoutId;
+        vm.LoadoutId = loadoutId;
         return vm;
     }
+    
+    /// <summary>
+    /// Creates PageData for the LoadoutGridPage, with the provided LoadoutId.
+    /// </summary>
+    public static PageData NewPageData(LoadoutId loadoutId) => CreatePageData(StaticId, loadoutId);
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
@@ -44,14 +34,7 @@ public class LoadoutGridPageFactory : APageFactory<ILoadoutGridViewModel, Loadou
             SectionName = "Mods",
             ItemName = Language.LoadoutLeftMenuViewModel_LoadoutGridEntry,
             Icon = IconValues.Collections,
-            PageData = new PageData
-            {
-                FactoryId = Id,
-                Context = new LoadoutGridContext
-                {
-                    LoadoutId = loadoutContext.LoadoutId,
-                },
-            },
+            PageData = CreatePageData(loadoutContext.LoadoutId),
         };
     }
 }

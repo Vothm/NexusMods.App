@@ -7,6 +7,10 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="OneOf"/>
+    </ItemGroup>
 
     <ItemGroup>
         <Compile Update="ALibraryArchiveInstaller.cs">

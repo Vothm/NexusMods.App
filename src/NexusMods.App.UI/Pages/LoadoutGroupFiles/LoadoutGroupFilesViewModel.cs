@@ -2,6 +2,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Selection;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
@@ -21,7 +22,7 @@ namespace NexusMods.App.UI.Pages.LoadoutGroupFiles;
 [UsedImplicitly]
 public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewModel>, ILoadoutGroupFilesViewModel
 {
-    [Reactive] public LoadoutGroupFilesPageContext? Context { get; set; }
+    [Reactive] public Optional<LoadoutItemGroupId> Context { get; set; }
     [Reactive] public IFileTreeViewModel? FileTreeViewModel { get; [UsedImplicitly] private set; }
     [Reactive] public FileTreeNodeViewModel? SelectedItem { get; [UsedImplicitly] private set; }
 
@@ -35,7 +36,7 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
         OpenEditorCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var gamePath = SelectedItem!.Key;
-            var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
+            var group = LoadoutItemGroup.Load(connection.Db, Context.Value);
             var found = group
                 .Children
                 .OfTypeLoadoutItemWithTargetPath()
@@ -48,15 +49,7 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
                 return;
             }
 
-            var pageData = new PageData
-            {
-                FactoryId = TextEditorPageFactory.StaticId,
-                Context = new TextEditorPageContext
-                {
-                    LoadoutFileId = loadoutFile,
-                    FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath,
-                },
-            };
+            var pageData = TextEditorPageFactory.NewPageData(loadoutFile!.Id, gamePath);
 
             var workspaceController = windowManager.ActiveWorkspaceController;
 
@@ -69,7 +62,7 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
         {
             this.WhenAnyValue(vm => vm.Context)
                 .WhereNotNull()
-                .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupId))
+                .Select(context => LoadoutItemGroup.Load(connection.Db, context.Value))
                 .Where(group => group.IsValid())
                 .Select(group => new LoadoutGroupFileTreeViewModel(group))
                 .BindToVM(this, vm => vm.FileTreeViewModel)

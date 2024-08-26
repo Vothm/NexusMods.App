@@ -201,11 +201,7 @@ public class InProgressViewModel : APageViewModel<IInProgressViewModel>, IInProg
                         
                         var workspace = workspaces[0];
 
-                        var pageData = new PageData
-                        {
-                            FactoryId = FileOriginsPageFactory.StaticId,
-                            Context = new FileOriginsPageContext { LoadoutId = workspace.Context.LoadoutId },
-                        };
+                        var pageData = FileOriginsPageFactory.NewPageData(workspace.Context.LoadoutId);
                         var behavior = GetWorkspaceController().GetOpenPageBehavior(pageData, navInfo);
                         
                         controller.OpenPage(workspace.Id, pageData, behavior);

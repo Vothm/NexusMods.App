@@ -2,28 +2,22 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
-[JsonName("TextEditorPageContext")]
-public record TextEditorPageContext : IPageFactoryContext
-{
-    public required LoadoutFileId LoadoutFileId { get; init; }
-    public required GamePath FilePath { get; init; }
-}
-
 [UsedImplicitly]
-public class TextEditorPageFactory : APageFactory<ITextEditorPageViewModel, TextEditorPageContext>
+public class TextEditorPageFactory(IServiceProvider serviceProvider) : APageFactory<ITextEditorPageViewModel, LoadoutFileId, GamePath>(serviceProvider)
 {
-    public TextEditorPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
-
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("ea4947ea-5f97-4e4d-abf2-bd511fbd9b4e"));
     public override PageFactoryId Id => StaticId;
+    
+    /// <summary>
+    /// Creates PageData for the TextEditorPage, with the provided LoadoutFileId and GamePath.
+    /// </summary>
+    public static PageData NewPageData(LoadoutFileId loadoutFileId, GamePath gamePath) => CreatePageData(StaticId, loadoutFileId, gamePath);
 
-    public override ITextEditorPageViewModel CreateViewModel(TextEditorPageContext context)
+    protected override ITextEditorPageViewModel CreateViewModel(LoadoutFileId context, GamePath gamePath)
     {
         var vm = ServiceProvider.GetRequiredService<ITextEditorPageViewModel>();
         vm.Context = context;

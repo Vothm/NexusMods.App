@@ -8,14 +8,12 @@ using NexusMods.Abstractions.FileStore.ArchiveMetadata;
 using NexusMods.Abstractions.FileStore.Downloads;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.MnemonicDB.Analyzers;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
@@ -103,9 +101,6 @@ public static class Services
         // Disk State and Synchronizer
         coll.AddDiskStateEntryModel();
         coll.AddAllSingleton<ISynchronizerService, SynchronizerService>();
-
-        coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
-        coll.AddAllSingleton<ISorter, Sorter>();
         
         // Download Analyzer
         coll.AddAttributeCollection(typeof(DownloadAnalysis));

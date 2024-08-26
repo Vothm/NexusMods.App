@@ -103,14 +103,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
 
                 workspaceController.ChangeOrCreateWorkspaceByContext(
                     context => context.LoadoutId == loadoutId,
-                    () => new PageData
-                    {
-                        FactoryId = LoadoutGridPageFactory.StaticId,
-                        Context = new LoadoutGridContext
-                        {
-                            LoadoutId = loadoutId,
-                        },
-                    },
+                    () => LoadoutGridPageFactory.NewPageData(loadoutId),
                     () => new LoadoutContext
                     {
                         LoadoutId = loadoutId,

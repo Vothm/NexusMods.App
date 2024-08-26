@@ -6,10 +6,8 @@ using NexusMods.Icons;
 namespace NexusMods.App.UI.Pages.Downloads;
 
 [UsedImplicitly]
-public class InProgressPageFactory : APageFactory<IInProgressViewModel>
+public class InProgressPageFactory(IServiceProvider serviceProvider) : APageFactory<IInProgressViewModel>(serviceProvider)
 {
-    public InProgressPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
-
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("1ca0baaf-725a-47fb-8596-2567734a4113"));
     public override PageFactoryId Id => StaticId;
 
@@ -17,6 +15,11 @@ public class InProgressPageFactory : APageFactory<IInProgressViewModel>
     {
         return ServiceProvider.GetRequiredService<IInProgressViewModel>();
     }
+    
+    /// <summary>
+    /// Creates a new <see cref="PageData"/> object with the provided context.
+    /// </summary>
+    public static PageData NewPageData() => CreatePageData(StaticId);
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {

@@ -85,15 +85,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
 
         ViewLibraryCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
-            var pageData = new PageData
-            {
-                Context = new FileOriginsPageContext
-                {
-                    LoadoutId = LoadoutId,
-                },
-                FactoryId = FileOriginsPageFactory.StaticId,
-            };
-
+            var pageData = FileOriginsPageFactory.NewPageData(LoadoutId);
             var workspaceController = GetWorkspaceController();
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             workspaceController.OpenPage(WorkspaceId, pageData, behavior);
@@ -105,14 +97,7 @@ public class LoadoutGridViewModel : APageViewModel<ILoadoutGridViewModel>, ILoad
         {
             var groupId = SelectedGroupIds.Items.First();
 
-            var pageData = new PageData
-            {
-                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
-                Context = new LoadoutGroupFilesPageContext
-                {
-                    GroupId = groupId,
-                },
-            };
+            var pageData = LoadoutGroupFilesPageFactory.NewPageData(groupId);
 
             var workspaceController = GetWorkspaceController();
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info);

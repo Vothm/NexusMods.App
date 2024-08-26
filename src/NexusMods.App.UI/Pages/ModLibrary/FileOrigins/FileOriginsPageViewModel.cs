@@ -121,15 +121,7 @@ public class FileOriginsPageViewModel : APageViewModel<IFileOriginsPageViewModel
                     // Note(sewer): Design currently doesn't require we scroll to item,
                     //              (it's challenging) so just navigating to correct
                     //              view is enough.
-                    var pageData = new PageData()
-                    {
-                        FactoryId = LoadoutGridPageFactory.StaticId,
-                        Context = new LoadoutGridContext()
-                        {
-                            LoadoutId = loadoutId,
-                        }
-                    };
-
+                    var pageData = LoadoutGridPageFactory.NewPageData(LoadoutId);
                     var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                     workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
                 }

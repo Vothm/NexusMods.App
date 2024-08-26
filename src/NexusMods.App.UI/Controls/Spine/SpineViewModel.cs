@@ -149,11 +149,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                         if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
                             activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                         {
-                            workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
-                            {
-                                FactoryId = MyGamesPageFactory.StaticId,
-                                Context = new MyGamesPageContext(),
-                            });
+                            workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => MyGamesPageFactory.PageData);
                         }
                     }, false)
                     .SubscribeWithErrorLogging()
@@ -229,12 +225,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     {
         var workspaceController = _windowManager.ActiveWorkspaceController;
 
-        workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
-            {
-                FactoryId = MyGamesPageFactory.StaticId,
-                Context = new MyGamesPageContext()
-            }
-        );
+        workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => MyGamesPageFactory.PageData);
     }
 
     private void ChangeToLoadoutWorkspace(LoadoutId loadoutId)
@@ -243,14 +234,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         workspaceController.ChangeOrCreateWorkspaceByContext(
             context => context.LoadoutId == loadoutId,
-            () => new PageData
-            {
-                FactoryId = LoadoutGridPageFactory.StaticId,
-                Context = new LoadoutGridContext
-                {
-                    LoadoutId = loadoutId
-                }
-            },
+            () => LoadoutGridPageFactory.NewPageData(loadoutId),
             () => new LoadoutContext
             {
                 LoadoutId = loadoutId
@@ -262,12 +246,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     {
         var workspaceController = _windowManager.ActiveWorkspaceController;
 
-        workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
-            {
-                FactoryId = InProgressPageFactory.StaticId,
-                Context = new InProgressPageContext()
-            }
-        );
+        workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => InProgressPageFactory.CreatePageData());
     }
     
     private void NavigateToMyGames()
