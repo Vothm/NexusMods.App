@@ -38,7 +38,6 @@ internal class TypeFinder : ITypeFinder
         typeof(MyLoadoutsPageContext),
         typeof(LoadoutGroupFilesPageContext),
         typeof(LibraryPageContext),
-        typeof(LoadoutPageContext),
 
         // workspace context
         typeof(EmptyContext),

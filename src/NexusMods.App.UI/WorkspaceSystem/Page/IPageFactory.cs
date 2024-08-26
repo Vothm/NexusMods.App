@@ -2,6 +2,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Windows;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -18,7 +19,7 @@ public interface IPageFactory
     /// <summary>
     /// Creates a new page using the provided context.
     /// </summary>
-    public Page Create(IPageFactoryContext context);
+    public Page Create(PageData context);
 
     /// <summary>
     /// Returns details about every page that can be created with this factory in the given <see cref="IWorkspaceContext"/>.
@@ -35,22 +36,17 @@ public interface IPageFactory
 /// <typeparam name="TContext"></typeparam>
 public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
     where TViewModel : class, IPageViewModelInterface
-    where TContext : class, IPageFactoryContext
 {
-    Page IPageFactory.Create(IPageFactoryContext context)
+    Page IPageFactory.Create(PageData pageData)
     {
-        if (context is not TContext actualContext)
-            throw new ArgumentException($"Unsupported type: {context.GetType()}");
+        if (pageData.Context is not TContext actualContext)
+            throw new ArgumentException($"Unsupported type: {pageData.Context.GetType()}");
 
         var vm = CreateViewModel(actualContext);
         return new Page
         {
             ViewModel = vm,
-            PageData = new PageData
-            {
-                FactoryId = Id,
-                Context = actualContext,
-            },
+            PageData = pageData with { FactoryId = Id },
         };
     }
 
@@ -64,9 +60,8 @@ public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
 /// Abstract class to easily implement <see cref="IPageFactory"/>.
 /// </summary>
 [PublicAPI]
-public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewModel, TContext>
-    where TViewModel : class, IPageViewModelInterface
-    where TContext : class, IPageFactoryContext
+public abstract class APageFactory<TViewModel> : IPageFactory<TViewModel, Null>
+    where TViewModel : class, IPageViewModelInterface 
 {
     /// <inheritdoc/>
     public abstract PageFactoryId Id { get; }
@@ -81,7 +76,69 @@ public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewMod
     }
 
     /// <inheritdoc/>
-    public abstract TViewModel CreateViewModel(TContext context);
+    public TViewModel CreateViewModel(Null context)
+    {
+        return CreateViewModel();
+    }
+    
+    /// <summary>
+    /// Creates a new view model.
+    /// </summary>
+    protected abstract TViewModel CreateViewModel();
+
+    /// <summary>
+    /// Creates a new <see cref="PageData"/> object with the provided context.
+    /// </summary>
+    /// <param name="arg1"></param>
+    /// <returns></returns>
+    protected PageData CreatePageData() => new()
+    {
+        FactoryId = Id,
+        Context = Null.Instance,
+    };
+
+    /// <inheritdoc/>
+    public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();
+
+    /// <inheritdoc/>
+    public virtual Optional<OpenPageBehaviorType> DefaultOpenPageBehavior { get; } = Optional<OpenPageBehaviorType>.None;
+}
+
+
+
+/// <summary>
+/// Abstract class to easily implement <see cref="IPageFactory"/>.
+/// </summary>
+[PublicAPI]
+public abstract class APageFactory<TViewModel, TArg1> : IPageFactory<TViewModel, TArg1>
+    where TViewModel : class, IPageViewModelInterface 
+    where TArg1 : notnull
+{
+    /// <inheritdoc/>
+    public abstract PageFactoryId Id { get; }
+
+    protected readonly IServiceProvider ServiceProvider;
+    protected readonly IWindowManager WindowManager;
+
+    protected APageFactory(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+        WindowManager = serviceProvider.GetRequiredService<IWindowManager>();
+    }
+
+    /// <inheritdoc/>
+    public abstract TViewModel CreateViewModel(TArg1 context);
+
+    /// <summary>
+    /// Creates a new <see cref="PageData"/> object with the provided context.
+    /// </summary>
+    /// <param name="arg1"></param>
+    /// <returns></returns>
+    protected PageData CreatePageData(TArg1 arg1) => new()
+    {
+        FactoryId = Id,
+        Context = arg1,
+    };
 
     /// <inheritdoc/>
     public virtual IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext) => Array.Empty<PageDiscoveryDetails?>();

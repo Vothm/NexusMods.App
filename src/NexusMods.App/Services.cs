@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Activities;
@@ -80,7 +79,6 @@ public static class Services
                 .AddAdvancedInstaller()
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
-                .AddSerializationAbstractions()
                 .AddInstallerTypes()
                 .AddSupportedGames(experimentalSettings)
                 .AddActivityMonitor()

@@ -45,7 +45,7 @@ public class PageFactoryController
     public Page Create(PageData pageData, WindowId windowId, WorkspaceId workspaceId, PanelId panelId, Optional<PanelTabId> tabId)
     {
         var factory = GetFactory(pageData);
-        var page = factory.Create(pageData.Context);
+        var page = factory.Create(pageData);
         page.ViewModel.WindowId = windowId;
         page.ViewModel.WorkspaceId = workspaceId;
         page.ViewModel.PanelId = panelId;

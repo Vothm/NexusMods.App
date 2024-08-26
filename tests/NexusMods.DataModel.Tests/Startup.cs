@@ -6,8 +6,6 @@ using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Activities;
 using NexusMods.App.BuildInfo;

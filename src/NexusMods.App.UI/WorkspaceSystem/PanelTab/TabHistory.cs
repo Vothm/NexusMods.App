@@ -90,7 +90,7 @@ internal class TabHistory : ReactiveObject
 
     public void AddToHistory(PageData pageData)
     {
-        _isEphemeralPage = pageData.Context.IsEphemeral;
+        _isEphemeralPage = pageData.IsEphemeral;
         if (IsTraversing) return;
 
         // NOTE(erri120): ephemeral pages don't get added to the

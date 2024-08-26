@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -10,14 +9,9 @@ using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
-[JsonName("NexusMods.App.UI.Pages.Library.LibraryPageContext")]
-public record LibraryPageContext : IPageFactoryContext
-{
-    public required LoadoutId LoadoutId { get; init; }
-}
 
 [UsedImplicitly]
-public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageContext>
+public class LibraryPageFactory : APageFactory<ILibraryViewModel, LoadoutId>
 {
     private readonly ISettingsManager _settingsManager;
     public LibraryPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -28,9 +22,9 @@ public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageCon
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("547926e3-56ba-4ed1-912d-d0d7e8b7e287"));
     public override PageFactoryId Id => StaticId;
 
-    public override ILibraryViewModel CreateViewModel(LibraryPageContext context)
+    public override ILibraryViewModel CreateViewModel(LoadoutId loadoutId)
     {
-        var vm = new LibraryViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var vm = new LibraryViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, loadoutId);
         return vm;
     }
 
@@ -44,14 +38,7 @@ public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageCon
             SectionName = "Mods",
             ItemName = "Library (new)",
             Icon = IconValues.ModLibrary,
-            PageData = new PageData
-            {
-                FactoryId = Id,
-                Context = new LibraryPageContext
-                {
-                    LoadoutId = loadoutContext.LoadoutId,
-                },
-            },
+            PageData = CreatePageData(loadoutContext.LoadoutId),
         };
     }
 }

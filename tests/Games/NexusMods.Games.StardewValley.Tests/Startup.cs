@@ -31,7 +31,6 @@ public class Startup
             .AddGames()
             .AddFileStoreAbstractions()
             .AddLoadoutAbstractions()
-            .AddSerializationAbstractions()
             .AddInstallerTypes()
             .Validate();
     }

@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -10,14 +9,8 @@ using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
-[JsonName("NexusMods.App.UI.Pages.Library.LoadoutPageContext")]
-public record LoadoutPageContext : IPageFactoryContext
-{
-    public required LoadoutId LoadoutId { get; init; }
-}
-
 [UsedImplicitly]
-public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageContext>
+public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutId>
 {
     private readonly ISettingsManager _settingsManager;
     public LoadoutPageFactory(IServiceProvider serviceProvider) : base(serviceProvider)
@@ -28,12 +21,12 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("62fda6ce-e6b7-45d6-936f-a8f325bfc644"));
     public override PageFactoryId Id => StaticId;
 
-    public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
+    public override ILoadoutViewModel CreateViewModel(LoadoutId loadoutId)
     {
-        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, loadoutId);
         return vm;
     }
-
+    
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
         if (!_settingsManager.Get<ExperimentalViewSettings>().ShowNewTreeViews) yield break;
@@ -44,14 +37,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
             SectionName = "Mods",
             ItemName = "My Mods (new)",
             Icon = IconValues.Collections,
-            PageData = new PageData
-            {
-                FactoryId = Id,
-                Context = new LoadoutPageContext
-                {
-                    LoadoutId = loadoutContext.LoadoutId,
-                },
-            },
+            PageData = CreatePageData(loadoutContext.LoadoutId),
         };
     }
 }

@@ -5,7 +5,4 @@
     <ItemGroup>
       <PackageReference Include="DynamicData" />
     </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
-    </ItemGroup>
 </Project>

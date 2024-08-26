@@ -81,10 +81,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 var pageData = new PageData
                 {
                     FactoryId = LoadoutPageFactory.StaticId,
-                    Context = new LoadoutPageContext
-                    {
-                        LoadoutId = loadoutContext.LoadoutId,
-                    },
+                    Context = loadoutContext.LoadoutId,
                 };
 
                 var behavior = workspaceController.GetOpenPageBehavior(pageData, info);

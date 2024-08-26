@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Installers;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine;

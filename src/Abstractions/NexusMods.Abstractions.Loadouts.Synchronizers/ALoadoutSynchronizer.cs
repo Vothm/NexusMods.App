@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.DiskState;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games.Loadouts.Sorting;
 using NexusMods.Abstractions.Games.Trees;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
@@ -18,7 +17,6 @@ using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -39,7 +37,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     private readonly ILogger _logger;
     private readonly IOSInformation _os;
-    private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
     private readonly IServiceProvider _serviceProvider;
 
@@ -55,7 +52,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IServiceProvider serviceProvider,
         ILogger logger,
         IFileStore fileStore,
-        ISorter sorter,
         IConnection conn,
         IOSInformation os,
         IGarbageCollectorRunner garbageCollectorRunner)
@@ -64,7 +60,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         _logger = logger;
         _fileStore = fileStore;
-        _sorter = sorter;
         Connection = conn;
         _os = os;
         _garbageCollectorRunner = garbageCollectorRunner;
@@ -78,7 +73,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider,
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<IFileStore>(),
-        provider.GetRequiredService<ISorter>(),
         provider.GetRequiredService<IConnection>(),
         provider.GetRequiredService<IOSInformation>(),
         provider.GetRequiredService<IGarbageCollectorRunner>()

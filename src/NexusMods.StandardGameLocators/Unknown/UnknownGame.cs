@@ -7,7 +7,6 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Mods;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Serialization;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using LocationId = NexusMods.Abstractions.GameLocators.LocationId;

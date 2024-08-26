@@ -44,7 +44,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
 
     public TabData? ToData()
     {
-        if (Contents.PageData.Context.IsEphemeral) return null;
+        if (Contents.IsEphemeral) return null;
 
         return new TabData
         {
