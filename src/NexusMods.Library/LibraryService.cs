@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
@@ -55,7 +56,7 @@ public sealed class LibraryService : ILibraryService
         return group;
     }
 
-    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? itemInstaller = null)
+    public IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? itemInstaller = null, Optional<LoadoutItemId> groupId = default)
     {
         var job = new InstallLoadoutItemJob(monitor: _monitor, worker: _serviceProvider.GetRequiredService<InstallLoadoutItemJobWorker>())
         {
@@ -63,6 +64,7 @@ public sealed class LibraryService : ILibraryService
             LibraryItem = libraryItem,
             Loadout = targetLoadout,
             Installer = itemInstaller,
+            GroupId = groupId,
         };
 
         return job;

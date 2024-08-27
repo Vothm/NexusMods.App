@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -21,6 +21,9 @@ public static class Services
     public static IServiceCollection AddNexusWebApi(this IServiceCollection collection, bool? apiKeyAuth = null)
     {
         collection.AddLoginVerbs();
+
+        collection.AddGraphQLClient()
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql"));
 
         apiKeyAuth ??= Environment.GetEnvironmentVariable(ApiKeyMessageFactory.NexusApiKeyEnvironmentVariable) != null;
 
@@ -47,6 +50,8 @@ public static class Services
         
         return collection
             .AddNexusModsLibraryModels()
+            .AddOptionParser(p => (CollectionSlug.From(p), (string?)null))
+            .AddOptionParser(p => (RevisionNumber.From(uint.Parse(p)), (string?)null))
             .AddSingleton<NexusModsLibrary>()
             .AddWorker<NexusModsDownloadJobWorker>()
             .AddNexusModsDownloadJobPersistedStateModel()

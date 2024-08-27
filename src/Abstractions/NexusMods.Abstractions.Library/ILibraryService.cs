@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
@@ -31,7 +32,8 @@ public interface ILibraryService
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
-    IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? installer = null);
+    /// <param name="groupId">The group id to install the item into.</param>
+    IJob InstallItem(LibraryItem.ReadOnly libraryItem, Loadout.ReadOnly targetLoadout, ILibraryItemInstaller? installer = null, Optional<LoadoutItemId> groupId = default);
 
     /// <summary>
     /// Removes a number of items from the library.

@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -18,4 +19,5 @@ public class InstallLoadoutItemJob : AJob
     public required LibraryItem.ReadOnly LibraryItem { get; init; }
     public required Loadout.ReadOnly Loadout { get; init; }
     public ILibraryItemInstaller? Installer { get; init; }
+    public Optional<LoadoutItemId> GroupId { get; init; }
 }

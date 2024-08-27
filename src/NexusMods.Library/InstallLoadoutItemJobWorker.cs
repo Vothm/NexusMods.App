@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.Library;
 
@@ -57,6 +58,11 @@ internal class InstallLoadoutItemJobWorker : AJobWorker<InstallLoadoutItemJob>
             LoadoutItemGroup = loadoutGroup,
             LibraryItemId = job.LibraryItem,
         };
+        
+        if (job.GroupId.HasValue)
+        {
+           tx.Add(loadoutGroup.Id, LoadoutItem.ParentId, job.GroupId.Value);
+        }
 
         var transactionResult = await transaction.Commit();
         var jobResults = transactionResult.Remap(loadoutGroup);

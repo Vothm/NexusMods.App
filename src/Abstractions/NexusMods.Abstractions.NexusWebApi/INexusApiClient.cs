@@ -99,4 +99,9 @@ public interface INexusApiClient
     /// Returns metadata about a specific mod.
     /// </summary>
     Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default);
+    
+    /// <summary>
+    /// Returns the download links for a collection definition file
+    /// </summary>
+    Task<Response<DownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug collectionSlug, RevisionNumber revisionNumber, CancellationToken token = default);
 }

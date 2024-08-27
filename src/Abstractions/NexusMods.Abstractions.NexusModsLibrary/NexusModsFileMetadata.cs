@@ -32,4 +32,9 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// Reference to the mod page of the file.
     /// </summary>
     public static readonly ReferenceAttribute<NexusModsModPageMetadata> ModPage = new(Namespace, nameof(ModPage));
+
+    /// <summary>
+    /// All the library files that reference this metadata
+    /// </summary>
+    public static readonly BackReferenceAttribute<NexusModsLibraryFile> LibraryFiles = new(NexusModsLibraryFile.FileMetadata);
 }

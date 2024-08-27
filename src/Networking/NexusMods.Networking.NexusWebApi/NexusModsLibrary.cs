@@ -125,10 +125,19 @@ public class NexusModsLibrary
         NXMModUrl url,
         CancellationToken cancellationToken)
     {
+        var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
         var modPage = await GetOrAddModPage(url.ModId, GameDomain.From(url.Game), cancellationToken);
         var file = await GetOrAddFile(url.FileId, modPage, GameDomain.From(url.Game), cancellationToken);
+        return await CreateDownloadJob(destination, file, nxmData, cancellationToken);
+    }
 
-        var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
+    public async Task<NexusModsDownloadJob> CreateDownloadJob(
+        AbsolutePath destination,
+        NexusModsFileMetadata.ReadOnly file,
+        Optional<(NXMKey, DateTime)> nxmData,
+        CancellationToken cancellationToken)
+    {
+
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
 
         var worker = _serviceProvider.GetRequiredService<NexusModsDownloadJobWorker>();
@@ -141,7 +150,7 @@ public class NexusModsLibrary
             {
                 Destination = destination,
                 Uri = uri,
-                DownloadPageUri = modPage.GetUri(),
+                DownloadPageUri = file.ModPage.GetUri(),
                 PersistedJobState = new PersistedJobState.New(tx, id)
                 {
                     Status = JobStatus.None,

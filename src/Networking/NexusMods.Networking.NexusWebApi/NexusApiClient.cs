@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using StrawberryShake;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -17,6 +18,7 @@ public class NexusApiClient : INexusApiClient
     private readonly ILogger<NexusApiClient> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
+    private readonly IGraphQLClient _graphQLClient;
 
     /// <summary>
     /// Creates a <see cref="NexusApiClient"/> responsible for providing easy access to the Nexus API.
@@ -27,9 +29,10 @@ public class NexusApiClient : INexusApiClient
     /// <remarks>
     ///    This class is usually instantiated using the Microsoft DI Container.
     /// </remarks>
-    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient)
+    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient, IGraphQLClient graphQLClient)
     {
         _logger = logger;
+        _graphQLClient = graphQLClient;
         _factory = factory;
         _httpClient = httpClient;
     }
@@ -38,7 +41,7 @@ public class NexusApiClient : INexusApiClient
     /// Retrieves the current user information when logged in via APIKEY
     /// </summary>
     /// <param name="token">Can be used to cancel this task.</param>
-    public async Task<Response<ValidateInfo>> Validate(CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<ValidateInfo>> Validate(CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/users/validate.json"));
         return await SendAsync<ValidateInfo>(msg, token);
@@ -49,7 +52,7 @@ public class NexusApiClient : INexusApiClient
     /// <summary>
     /// Retrieves information about the current user when logged in via OAuth.
     /// </summary>
-    public async Task<Response<OAuthUserInfo>> GetOAuthUserInfo(CancellationToken cancellationToken = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<OAuthUserInfo>> GetOAuthUserInfo(CancellationToken cancellationToken = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, OAuthUserInfoUri);
         return await SendAsync<OAuthUserInfo>(msg, cancellationToken);
@@ -59,7 +62,7 @@ public class NexusApiClient : INexusApiClient
     /// Returns a list of games supported by Nexus.
     /// </summary>
     /// <param name="token">Can be used to cancel this task.</param>
-    public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<GameInfo[]>> Games(CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
         return await SendAsyncArray<GameInfo>(msg, token);
@@ -84,7 +87,7 @@ public class NexusApiClient : INexusApiClient
     /// <remarks>
     ///    Currently available for Premium users only; with some minor exceptions [nxm links].
     /// </remarks>
-    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
@@ -111,7 +114,7 @@ public class NexusApiClient : INexusApiClient
     /// <remarks>
     ///    Currently available for Premium users only; with some minor exceptions [nxm links].
     /// </remarks>
-    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={new DateTimeOffset(expireTime).ToUnixTimeSeconds()}"));
@@ -128,7 +131,7 @@ public class NexusApiClient : INexusApiClient
     /// <param name="time">Time-frame within which to search for updates.</param>
     /// <param name="token">Token used to cancel the task.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public async Task<Response<ModUpdate[]>> ModUpdatesAsync(string domain, PastTime time, CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<ModUpdate[]>> ModUpdatesAsync(string domain, PastTime time, CancellationToken token = default)
     {
         var timeString = time switch
         {
@@ -156,7 +159,7 @@ public class NexusApiClient : INexusApiClient
     /// </param>
     /// <param name="token">Token used to cancel the task.</param>
     /// <returns></returns>
-    public async Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
@@ -167,28 +170,40 @@ public class NexusApiClient : INexusApiClient
     /// <summary>
     /// Returns information about a specific mod.
     /// </summary>
-    public async Task<Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default)
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<ModInfo>> ModInfoAsync(string domain, ModId modId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}.json"));
         return await SendAsync<ModInfo>(msg, token);
     }
-    
-    
 
-    private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
+    /// <inheritdoc />
+    public async Task<Abstractions.NexusWebApi.DTOs.Response<DownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug collectionSlug, RevisionNumber revisionNumber, CancellationToken token = default)
+    {
+        var result = await _graphQLClient.CollectionDownloadLink.ExecuteAsync(collectionSlug.ToString(), (int)revisionNumber.Value, true, token);
+        result.EnsureNoErrors();
+
+        var linkPath = result.Data!.CollectionRevision.DownloadLink;
+        
+        var msg = await _factory.Create(HttpMethod.Get, new Uri(
+            $"https://api.nexusmods.com/{linkPath}"));
+        return await SendAsync<DownloadLinks>(msg, token);
+    }
+
+
+    private async Task<Abstractions.NexusWebApi.DTOs.Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonSerializable<T>
     {
         return await SendAsync(message, T.GetTypeInfo(), token);
     }
 
-    private async Task<Response<T[]>> SendAsyncArray<T>(HttpRequestMessage message,
+    private async Task<Abstractions.NexusWebApi.DTOs.Response<T[]>> SendAsyncArray<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonArraySerializable<T>
     {
         return await SendAsync(message, T.GetArrayTypeInfo(), token);
     }
 
-    private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message, JsonTypeInfo<T> typeInfo,
+    private async Task<Abstractions.NexusWebApi.DTOs.Response<T>> SendAsync<T>(HttpRequestMessage message, JsonTypeInfo<T> typeInfo,
         CancellationToken token = default)
     {
         try
@@ -198,11 +213,11 @@ public class NexusApiClient : INexusApiClient
                 throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
 
             var data = await response.Content.ReadFromJsonAsync(typeInfo, token);
-            return new Response<T>
+            return new Abstractions.NexusWebApi.DTOs.Response<T>
             {
                 Data = data!,
                 Metadata = ParseHeaders(response),
-                StatusCode = response.StatusCode
+                StatusCode = response.StatusCode,
             };
         }
         catch (HttpRequestException ex)
