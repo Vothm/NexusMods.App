@@ -125,6 +125,7 @@ public static class Services
         
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
+        Games.DivinityOriginalSin2DefinitiveEdition.Services.AddDivinityOriginalSin2DefinitiveEdition(services);
         return services;
     }
 }
