@@ -250,7 +250,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GC",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.FileStore.Nx", "src\Abstractions\NexusMods.Abstractions.FileStore.Nx\NexusMods.Abstractions.FileStore.Nx.csproj", "{5CB12332-A2E9-4A6A-993E-718490C61A9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.DivinityOriginalSin2DefinitiveEdition", "src\Games\NexusMods.Games.DivinityOriginalSin2DefinitiveEdition\NexusMods.Games.DivinityOriginalSin2DefinitiveEdition.csproj", "{5945740C-B2ED-456C-9D0F-42C965268677}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Larian", "src\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj", "{5945740C-B2ED-456C-9D0F-42C965268677}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

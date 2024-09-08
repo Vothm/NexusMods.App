@@ -121,11 +121,11 @@ public static class Services
     {
         if (experimentalSettings is { EnableAllGames: true })
         {
+            Games.Larian.Services.AddLarianGames(services);
         }
         
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
-        Games.DivinityOriginalSin2DefinitiveEdition.Services.AddDivinityOriginalSin2DefinitiveEdition(services);
         return services;
     }
 }

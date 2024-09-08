@@ -14,7 +14,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.DivinityOriginalSin2DefinitiveEdition;
+namespace NexusMods.Games.Larian.DivinityOriginalSin2DefinitiveEdition;
 
 public class DivinityOriginalSin2DefinitiveEdition : AGame, ISteamGame
 {
@@ -43,10 +43,10 @@ public class DivinityOriginalSin2DefinitiveEdition : AGame, ISteamGame
     public IEnumerable<uint> SteamIds => new[] { 435150u };
     
     public override IStreamFactory Icon => 
-        new EmbededResourceStreamFactory<DivinityOriginalSin2DefinitiveEdition>("NexusMods.Games.DivinityOriginalSin2DefinitiveEdition.Resources.icon.png");
+        new EmbededResourceStreamFactory<DivinityOriginalSin2DefinitiveEdition>("NexusMods.Games.Larian.Resources.DivinityOriginalSin2DefinitiveEdition.icon.png");
     
     public override IStreamFactory GameImage => 
-        new EmbededResourceStreamFactory<DivinityOriginalSin2DefinitiveEdition>("NexusMods.Games.DivinityOriginalSin2DefinitiveEdition.Resources.game_image .png");
+        new EmbededResourceStreamFactory<DivinityOriginalSin2DefinitiveEdition>("NexusMods.Games.Larian.Resources.DivinityOriginalSin2DefinitiveEdition.game_image .png");
     
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
     

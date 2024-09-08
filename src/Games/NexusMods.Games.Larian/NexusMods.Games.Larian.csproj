@@ -16,10 +16,22 @@
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
+    <!-- For DOS2:DE -->
     <ItemGroup>
-        <None Remove="Resources\game_image.jpg"/>
-        <EmbeddedResource Include="Resources\game_image.jpg"/>
-        <None Remove="Resources\icon.jpg"/>
-        <EmbeddedResource Include="Resources\icon.png"/>
+        <None Remove="Resources\DivinityOriginalSin2DefinitiveEdition\icon.png"/>
+        <EmbeddedResource Include="Resources\DivinityOriginalSin2DefinitiveEdition\icon.png"/>
+        <None Remove="Resources\DivinityOriginalSin2DefinitiveEdition\game_image.jpg" />
+        <EmbeddedResource Include="Resources\DivinityOriginalSin2DefinitiveEdition\game_image.jpg"/>
     </ItemGroup>
+
+    <!-- For Baldur's Gate 3 -->
+    <ItemGroup>
+        <None Remove="Resources\BaldursGate3\icon.png"/>
+        <EmbeddedResource Include="Resources\BaldursGate3\icon.png"/>
+        <None Remove="Resources\BaldursGate3\game_image.jpg" />
+        <EmbeddedResource Include="Resources\BaldursGate3\game_image.jpg"/>
+    </ItemGroup>
+
+    
+    
 </Project>

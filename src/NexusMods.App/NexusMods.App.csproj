@@ -35,7 +35,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.DivinityOriginalSin2DefinitiveEdition\NexusMods.Games.DivinityOriginalSin2DefinitiveEdition.csproj"/>
+        <ProjectReference Include="..\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj" />
     </ItemGroup>
 
     <ItemGroup>
