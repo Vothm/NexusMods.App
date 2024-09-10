@@ -30,6 +30,9 @@ public class BaldursGate3 : AGame, ISteamGame
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "bin/bg3.exe");
 
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) 
+        => new BaldursGate3Synchronizer(provider);
+
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var result = new Dictionary<LocationId, AbsolutePath>()
