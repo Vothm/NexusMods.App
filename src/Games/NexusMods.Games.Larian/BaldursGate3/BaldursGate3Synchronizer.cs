@@ -13,8 +13,8 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
     
     public BaldursGate3Synchronizer(IServiceProvider provider) : base(provider)
     {
-        var SettingsManager = provider.GetRequiredService<ISettingsManager>();
-        _settings = SettingsManager.Get<BaldursGate3Settings>();
+        var settingsManager = provider.GetRequiredService<ISettingsManager>();
+        _settings = settingsManager.Get<BaldursGate3Settings>();
     }
 
     private static readonly GamePath[] IgnoredBackupFolders =

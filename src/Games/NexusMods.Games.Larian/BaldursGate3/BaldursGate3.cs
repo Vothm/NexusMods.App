@@ -16,7 +16,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
-public class BaldursGate3 : AGame, ISteamGame
+public class BaldursGate3 : AGame, ISteamGame, IGogGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("baldursgate3");
     private readonly IServiceProvider _serviceProvider;
@@ -44,6 +44,7 @@ public class BaldursGate3 : AGame, ISteamGame
     }
     
     public IEnumerable<uint> SteamIds => new[] { 1086940u };
+    public IEnumerable<long> GogIds => new[] { 1456460669L };
     
     public override IStreamFactory Icon => 
         new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.icon.png");
